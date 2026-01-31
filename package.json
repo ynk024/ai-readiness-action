@@ -1,0 +1,34 @@
+{
+  "name": "ai-readiness-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to check repositories for AI-readiness",
+  "type": "module",
+  "main": "scripts/index.js",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "test:watch": "node --test --watch tests/**/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js",
+    "start": "node scripts/index.js"
+  },
+  "keywords": [
+    "github-actions",
+    "ai-readiness",
+    "code-quality",
+    "test-coverage"
+  ],
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "glob": "^10.3.10",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ai-readiness-action.git"
+  },
+  "license": "MIT"
+}

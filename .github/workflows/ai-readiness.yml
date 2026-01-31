@@ -1,0 +1,57 @@
+name: AI-Readiness Check
+
+on:
+  workflow_call:
+    inputs:
+      endpoint_url:
+        description: 'HTTP endpoint to POST JSON results'
+        required: true
+        type: string
+      coverage_threshold:
+        description: 'Minimum coverage percentage required (default: 90)'
+        required: false
+        type: number
+        default: 90
+    secrets:
+      endpoint_token:
+        description: 'Authorization token for endpoint'
+        required: false
+
+jobs:
+  check:
+    name: AI-Readiness Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository being analyzed
+        uses: actions/checkout@v4
+      
+      - name: Checkout AI-readiness-action
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/ai-readiness-action
+          path: .ai-readiness-action
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: .ai-readiness-action/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+        working-directory: .ai-readiness-action
+      
+      - name: Run AI-Readiness Check
+        run: node scripts/index.js
+        working-directory: .ai-readiness-action
+        env:
+          ENDPOINT_URL: ${{ inputs.endpoint_url }}
+          ENDPOINT_TOKEN: ${{ secrets.endpoint_token }}
+          COVERAGE_THRESHOLD: ${{ inputs.coverage_threshold }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
