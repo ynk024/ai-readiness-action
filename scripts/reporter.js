@@ -8,8 +8,9 @@
 export async function postResults(report, endpoint, token = null) {
   if (!endpoint) {
     console.log('No endpoint URL provided, skipping HTTP POST');
-    console.log('Report data:');
+    console.log('\n=== AI-Readiness Report ===');
     console.log(JSON.stringify(report, null, 2));
+    console.log('=== End of Report ===\n');
     return;
   }
 
@@ -36,8 +37,10 @@ export async function postResults(report, endpoint, token = null) {
     console.log('Successfully posted results to endpoint');
   } catch (error) {
     console.error(`Failed to post results: ${error.message}`);
-    console.log('Report data:');
+    console.log('\n=== AI-Readiness Report (fallback) ===');
     console.log(JSON.stringify(report, null, 2));
-    throw error;
+    console.log('=== End of Report ===\n');
+    // Don't throw - just log the error and continue
+    // This ensures the action always succeeds even if POST fails
   }
 }

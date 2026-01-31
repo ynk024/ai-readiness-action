@@ -33,18 +33,20 @@ jobs:
   ai-readiness:
     uses: your-org/ai-readiness-action/.github/workflows/ai-readiness.yml@v1
     with:
-      endpoint_url: ${{ vars.AI_READINESS_ENDPOINT }}
+      endpoint_url: ${{ vars.AI_READINESS_ENDPOINT }}  # Optional
       coverage_threshold: 90
     secrets:
       endpoint_token: ${{ secrets.AI_READINESS_TOKEN }}
 ```
 
-### 2. Configure Variables and Secrets
+### 2. Configure Variables and Secrets (Optional)
 
-In your repository or organization settings:
+If you want to POST results to an HTTP endpoint, configure in your repository or organization settings:
 
-- **Variable**: `AI_READINESS_ENDPOINT` - Your HTTP endpoint URL
+- **Variable**: `AI_READINESS_ENDPOINT` - Your HTTP endpoint URL (optional)
 - **Secret**: `AI_READINESS_TOKEN` - (Optional) Bearer token for authentication
+
+**Note**: If `endpoint_url` is not provided, the action will print the JSON report to the console instead.
 
 ### 3. Ensure Coverage Files Exist
 
@@ -69,7 +71,7 @@ jobs:
 
 | Input | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `endpoint_url` | Yes | - | HTTP endpoint to POST JSON results |
+| `endpoint_url` | No | - | HTTP endpoint to POST JSON results (prints to console if not provided) |
 | `coverage_threshold` | No | 90 | Minimum coverage percentage (0-100) |
 
 ## Secrets

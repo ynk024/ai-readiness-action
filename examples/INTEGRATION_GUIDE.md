@@ -37,15 +37,17 @@ jobs:
       endpoint_token: ${{ secrets.AI_READINESS_TOKEN }}
 ```
 
-### 2. Configure Repository Variables
+### 2. Configure Repository Variables (Optional)
 
 In your repository or organization settings (Settings → Secrets and variables → Actions):
 
 **Variables:**
-- `AI_READINESS_ENDPOINT`: `https://your-api.example.com/ai-readiness`
+- `AI_READINESS_ENDPOINT`: `https://your-api.example.com/ai-readiness` (optional)
 
 **Secrets:**
 - `AI_READINESS_TOKEN`: Your bearer token for authentication (optional)
+
+**Note:** If you don't provide an `endpoint_url`, the action will print the JSON report to the console instead of POSTing it to an endpoint. This is useful for testing or if you just want to view the results in the GitHub Actions logs.
 
 ### 3. Ensure Coverage Files are Generated
 
@@ -221,3 +223,36 @@ app.post('/ai-readiness', (req, res) => {
   res.status(200).json({ success: true, id: report.metadata.repository.name });
 });
 ```
+
+## Using Without an Endpoint (Console Output Only)
+
+If you don't need to POST results to an endpoint and just want to see the report in your GitHub Actions logs, simply omit the `endpoint_url` parameter:
+
+```yaml
+name: AI Readiness Check
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test -- --coverage
+
+  ai-readiness:
+    needs: test
+    uses: your-org/ai-readiness-action/.github/workflows/ai-readiness.yml@v1
+    with:
+      coverage_threshold: 90
+    # No endpoint_url or secrets needed - will print to console
+```
+
+The action will print the full JSON report to the console, which you can view in the GitHub Actions logs. This is perfect for:
+- Testing the action before setting up a backend
+- Quick visibility into your repository's AI-readiness
+- Manual review without automated processing
+

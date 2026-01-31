@@ -4,8 +4,8 @@ on:
   workflow_call:
     inputs:
       endpoint_url:
-        description: 'HTTP endpoint to POST JSON results'
-        required: true
+        description: 'HTTP endpoint to POST JSON results (optional - will print to console if not provided)'
+        required: false
         type: string
       coverage_threshold:
         description: 'Minimum coverage percentage required (default: 90)'
