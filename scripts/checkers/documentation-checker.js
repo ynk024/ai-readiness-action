@@ -16,17 +16,17 @@ export async function checkDocumentation() {
     }
   }
 
-  // Find all SKILLS.md files
-  const skillsFiles = await findFiles('**/SKILLS.md');
+  // Find all SKILL.md files
+  const skillFiles = await findFiles('**/SKILL.md');
 
   return {
     agents_md: {
       present: agentsMdPath !== null,
       path: agentsMdPath
     },
-    skills_md: {
-      count: skillsFiles.length,
-      paths: skillsFiles
+    skill_md: {
+      count: skillFiles.length,
+      paths: skillFiles
     }
   };
 }
