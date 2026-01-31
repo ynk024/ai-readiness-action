@@ -9,6 +9,7 @@ import { parseGradleBuild, hasGradlePlugin } from '../utils/gradle-parser.js';
  * @returns {Promise<Object>}
  */
 export async function checkFormatters(languages) {
+  console.log('[formatter-checker] Starting formatter check...');
   const result = {
     javascript: {},
     java: {}
@@ -16,6 +17,7 @@ export async function checkFormatters(languages) {
 
   // JavaScript/TypeScript formatters
   if (languages.detected.includes('javascript') || languages.detected.includes('typescript')) {
+    console.log('[formatter-checker] Checking for Prettier configuration...');
     // Check for Prettier
     const prettierConfigs = [
       '.prettierrc',
@@ -30,15 +32,18 @@ export async function checkFormatters(languages) {
     for (const config of prettierConfigs) {
       if (await fileExists(config)) {
         prettierConfigFile = config;
+        console.log(`[formatter-checker] Found Prettier config: ${config}`);
         break;
       }
     }
 
     // Check package.json for prettier config
     if (!prettierConfigFile) {
+      console.log('[formatter-checker] No standalone Prettier config found, checking package.json...');
       const packageJson = await getPackageJson();
       if (packageJson && packageJson.prettier) {
         prettierConfigFile = 'package.json';
+        console.log('[formatter-checker] Found Prettier config in package.json');
       }
     }
 
@@ -46,6 +51,7 @@ export async function checkFormatters(languages) {
       present: prettierConfigFile !== null,
       config_file: prettierConfigFile
     };
+    console.log(`[formatter-checker] Prettier result: ${prettierConfigFile !== null ? 'present' : 'not present'}`);
   }
 
   // Java formatters

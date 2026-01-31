@@ -9,6 +9,7 @@ import { parseGradleBuild, hasGradlePlugin } from '../utils/gradle-parser.js';
  * @returns {Promise<Object>}
  */
 export async function checkLinting(languages) {
+  console.log('[linting-checker] Starting linting check...');
   const result = {
     javascript: {},
     java: {}
@@ -16,6 +17,7 @@ export async function checkLinting(languages) {
 
   // JavaScript/TypeScript linting
   if (languages.detected.includes('javascript') || languages.detected.includes('typescript')) {
+    console.log('[linting-checker] Checking for ESLint configuration...');
     const eslintConfigs = [
       '.eslintrc',
       '.eslintrc.js',
@@ -32,15 +34,18 @@ export async function checkLinting(languages) {
     for (const config of eslintConfigs) {
       if (await fileExists(config)) {
         eslintConfigFile = config;
+        console.log(`[linting-checker] Found ESLint config: ${config}`);
         break;
       }
     }
 
     // Check package.json for eslintConfig
     if (!eslintConfigFile) {
+      console.log('[linting-checker] No standalone ESLint config found, checking package.json...');
       const packageJson = await getPackageJson();
       if (packageJson && packageJson.eslintConfig) {
         eslintConfigFile = 'package.json';
+        console.log('[linting-checker] Found ESLint config in package.json');
       }
     }
 
@@ -48,6 +53,7 @@ export async function checkLinting(languages) {
       present: eslintConfigFile !== null,
       config_file: eslintConfigFile
     };
+    console.log(`[linting-checker] ESLint result: ${eslintConfigFile !== null ? 'present' : 'not present'}`);
   }
 
   // Java linting

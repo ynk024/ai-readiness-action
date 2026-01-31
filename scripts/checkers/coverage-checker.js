@@ -7,29 +7,41 @@ import { fileExists, readJsonFile, readXmlFile } from '../utils/file-utils.js';
  * @returns {Promise<Object>}
  */
 export async function checkCoverage(languages, threshold = 90) {
+  console.log(`[coverage-checker] Starting coverage check (threshold: ${threshold}%)...`);
   const toolsFound = [];
   let coverageData = null;
   let coverageFile = null;
 
   // Check for JavaScript/TypeScript coverage (Jest/Vitest)
   if (languages.detected.includes('javascript') || languages.detected.includes('typescript')) {
+    console.log('[coverage-checker] Checking for JavaScript/TypeScript coverage...');
     // Try standard location
     if (await fileExists('coverage/coverage-summary.json')) {
       coverageFile = 'coverage/coverage-summary.json';
+      console.log(`[coverage-checker] Found coverage file: ${coverageFile}`);
       const data = await readJsonFile(coverageFile);
       if (data && data.total) {
         toolsFound.push('jest'); // Could be Jest or Vitest, they use same format
         coverageData = parseJestCoverage(data);
+        console.log(`[coverage-checker] Parsed coverage data - lines: ${coverageData.lines.percentage}%`);
+      } else {
+        console.log('[coverage-checker] Coverage file exists but has no total data');
       }
     }
     // Try Vitest-specific location
     else if (await fileExists('coverage/vitest/coverage-summary.json')) {
       coverageFile = 'coverage/vitest/coverage-summary.json';
+      console.log(`[coverage-checker] Found coverage file: ${coverageFile}`);
       const data = await readJsonFile(coverageFile);
       if (data && data.total) {
         toolsFound.push('vitest');
         coverageData = parseJestCoverage(data);
+        console.log(`[coverage-checker] Parsed coverage data - lines: ${coverageData.lines.percentage}%`);
+      } else {
+        console.log('[coverage-checker] Coverage file exists but has no total data');
       }
+    } else {
+      console.log('[coverage-checker] No JavaScript/TypeScript coverage files found');
     }
   }
 
@@ -46,6 +58,7 @@ export async function checkCoverage(languages, threshold = 90) {
   }
 
   if (!coverageData) {
+    console.log('[coverage-checker] No coverage data found');
     return {
       available: false,
       tools_found: [],
@@ -58,6 +71,7 @@ export async function checkCoverage(languages, threshold = 90) {
 
   // Check if meets threshold (use line coverage as primary metric)
   const meetsThreshold = coverageData.lines.percentage >= threshold;
+  console.log(`[coverage-checker] Coverage check complete - meets threshold (${threshold}%): ${meetsThreshold}`);
 
   return {
     available: true,
